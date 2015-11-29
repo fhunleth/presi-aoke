@@ -4,9 +4,9 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication::setApplicationName("Paraoke");
-    QApplication::setOrganizationName("Troodon Software, LLC");
-    QApplication::setOrganizationDomain("troodon-software.com");
+    QApplication::setApplicationName("Presi-aoke");
+    QApplication::setOrganizationName("Frank Hunleth");
+    QApplication::setOrganizationDomain("hunleth.com");
     QApplication::setApplicationVersion("0.1");
 
     QApplication a(argc, argv);
