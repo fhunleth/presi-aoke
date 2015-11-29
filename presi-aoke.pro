@@ -33,3 +33,9 @@ DISTFILES += \
     deploy_osx.sh \
     presi-aoki.nsi \
     deploy_win32.bat
+
+unix {
+    target.path = /usr/local/bin
+    INSTALLS += target
+}
+
