@@ -39,3 +39,6 @@ unix {
     INSTALLS += target
 }
 
+RESOURCES += \
+    ui.qrc
+

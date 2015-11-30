@@ -1,0 +1,33 @@
+language: c++
+
+os:
+    - linux
+    - osx
+
+compiler:
+    - gcc
+    - clang
+
+matrix:
+    exclude:
+        - os: osx
+          compiler: gcc
+        - os: linux
+          compiler: clang
+
+
+# Install dependencies
+before_install:
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+        sudo apt-get update -qq;
+        sudo apt-get install -qq qt5-default qttools5-dev-tools;
+      else
+        brew update;
+        brew install qt5;
+        brew linkapps qt5;
+        brew link --force qt5;
+      fi
+
+script:
+    - qmake presi-aoke.pro
+    - make

@@ -1,5 +1,6 @@
 #include "SlideLoader.h"
 #include <QDir>
+#include <QDateTime>
 
 SlideLoader::SlideLoader(QObject *parent) : QObject(parent)
 {
@@ -7,6 +8,9 @@ SlideLoader::SlideLoader(QObject *parent) : QObject(parent)
 
 void SlideLoader::setSlidePath(const QString &path)
 {
+    // Seed the random number generated to get a new set of slides each time.
+    qsrand((uint) QDateTime::currentMSecsSinceEpoch());
+
     path_ = path;
     QDir dir(path);
     QStringList nameFilters;

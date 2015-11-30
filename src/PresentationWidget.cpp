@@ -7,7 +7,8 @@
 #include "SlideLoader.h"
 
 PresentationWidget::PresentationWidget(Settings *settings, QWidget *parent) : QWidget(parent),
-    settings_(settings)
+    settings_(settings),
+    state_(Slide)
 {
     setMinimumSize(1024, 768);
 
@@ -51,21 +52,31 @@ void PresentationWidget::keyPressEvent(QKeyEvent *k)
         previousSlide();
         break;
 
-    case Qt::Key_F:
     case Qt::Key_F5:
+        showFullScreen();
+        break;
+
+    case Qt::Key_Escape:
+        showNormal();
+        break;
+
+    case Qt::Key_F:
         if (isFullScreen())
             showNormal();
         else
             showFullScreen();
         break;
 
-    case Qt::Key_S:
+    case Qt::Key_S: // settings
         showSettings();
         break;
 
-    case Qt::Key_Escape:
-    case Qt::Key_Q:
+    case Qt::Key_Q: // quit
         close();
+        break;
+
+    case Qt::Key_R: // restart
+        reloadSettings();
         break;
 
     default:
@@ -73,6 +84,24 @@ void PresentationWidget::keyPressEvent(QKeyEvent *k)
     }
 }
 
+void PresentationWidget::scaleImage(QPainter *painter, const QImage &img) const
+{
+    QRect ourBounds = rect();
+    QRect imgBounds = img.rect();
+
+    float sx = (float) ourBounds.width() / imgBounds.width();
+    float sy = (float) ourBounds.height() / imgBounds.height();
+    float s = qMin(sx, sy);
+    int newWidth = qRound(s * imgBounds.width());
+    int newHeight = qRound(s * imgBounds.height());
+    QRect outBounds((ourBounds.width() - newWidth) / 2,
+                    (ourBounds.height() - newHeight) / 2,
+                    newWidth,
+                    newHeight);
+    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::SmoothPixmapTransform);
+    painter->drawImage(outBounds, img);
+}
 
 void PresentationWidget::paintEvent(QPaintEvent *)
 {
@@ -80,26 +109,34 @@ void PresentationWidget::paintEvent(QPaintEvent *)
 
     p.fillRect(rect(), Qt::black);
 
-    if (!currentSlide_.isNull()) {
-        QRect ourBounds = rect();
-        QRect imgBounds = currentSlide_.rect();
+    switch (state_) {
+    case Slide:
+        if (currentSlideIndex_ < 0 || currentSlide_.isNull())
+            drawInstructionSlide(&p);
+        else
+            scaleImage(&p, currentSlide_);
+        break;
 
-        float sx = (float) ourBounds.width() / imgBounds.width();
-        float sy = (float) ourBounds.height() / imgBounds.height();
-        float s = qMin(sx, sy);
-        int newWidth = qRound(s * imgBounds.width());
-        int newHeight = qRound(s * imgBounds.height());
-        QRect outBounds((ourBounds.width() - newWidth) / 2,
-                        (ourBounds.height() - newHeight) / 2,
-                        newWidth,
-                        newHeight);
-        p.drawImage(outBounds, currentSlide_);
+    case Intermission:
+        break;
+
+    case OutOfSlides:
+        break;
     }
+
+}
+
+void PresentationWidget::drawInstructionSlide(QPainter *painter)
+{
+    if (instructions_.isNull())
+        instructions_ = QImage(":/assets/instructions.png");
+    scaleImage(painter, instructions_);
 }
 
 void PresentationWidget::slidesFound(int count)
 {
     slideCount_ = count;
+    update();
 }
 
 void PresentationWidget::slide(int index, QImage image)
@@ -113,24 +150,42 @@ void PresentationWidget::slide(int index, QImage image)
 void PresentationWidget::noSlide(int index)
 {
     slideCount_ = index;
+    state_ = OutOfSlides;
+    update();
 }
 
 void PresentationWidget::reloadSettings()
 {
     slideCount_ = 0;
-    currentSlideIndex_ = 0;
     QMetaObject::invokeMethod(loader_, "setSlidePath", Qt::QueuedConnection, Q_ARG(QString, settings_->slidePath()));
     slidesPerTurn_ = settings_->slidesPerTurn();
+
+    // Reset state.
+    currentSlideIndex_ = -1;
+    state_ = Slide;
+    slideCounter_ = 0;
+
+    update();
 }
 
 
 void PresentationWidget::nextSlide()
 {
-    if (currentSlideIndex_ + 1 >= slideCount_)
-        return;
+    switch (state_) {
+    case Slide:
+        if (currentSlideIndex_ + 1 >= slideCount_) {
+            state_ = OutOfSlides;
+            return;
+        }
 
-    currentSlideIndex_++;
-    QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
+        currentSlideIndex_++;
+        QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
+        break;
+    case Intermission:
+    case OutOfSlides:
+        break;
+    }
+
 }
 
 void PresentationWidget::previousSlide()

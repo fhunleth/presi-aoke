@@ -28,6 +28,8 @@ private slots:
     void noSlide(int index);
 
 private:
+    void scaleImage(QPainter *painter, const QImage &img) const;
+    void drawInstructionSlide(QPainter *painter);
     void reloadSettings();
 
 private:
@@ -41,6 +43,16 @@ private:
     QThread *loaderThread_;
 
     int slidesPerTurn_;
+
+    enum State {
+        Slide,
+        Intermission,
+        OutOfSlides
+    };
+    State state_;
+    int slideCounter_;
+
+    QImage instructions_;
 };
 
 #endif // PRESENTATIONWIDGET_H
