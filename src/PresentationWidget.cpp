@@ -109,28 +109,46 @@ void PresentationWidget::paintEvent(QPaintEvent *)
 
     p.fillRect(rect(), Qt::black);
 
+    QImage img;
     switch (state_) {
     case Slide:
         if (currentSlideIndex_ < 0 || currentSlide_.isNull())
-            drawInstructionSlide(&p);
+            img = instructionSlide();
         else
-            scaleImage(&p, currentSlide_);
+            img = currentSlide_;
         break;
 
     case Intermission:
+        img = intermissionSlide();
         break;
 
+    default:
     case OutOfSlides:
+        img = outOfSlidesSlide();
         break;
     }
-
+    scaleImage(&p, img);
 }
 
-void PresentationWidget::drawInstructionSlide(QPainter *painter)
+QImage PresentationWidget::instructionSlide()
 {
-    if (instructions_.isNull())
-        instructions_ = QImage(":/assets/instructions.png");
-    scaleImage(painter, instructions_);
+    if (instructionsSlide_.isNull())
+        instructionsSlide_ = QImage(":/assets/instructions.png");
+    return instructionsSlide_;
+}
+
+QImage PresentationWidget::outOfSlidesSlide()
+{
+    if (outOfSlidesSlide_.isNull())
+        outOfSlidesSlide_ = QImage(":/assets/outofslides.png");
+    return outOfSlidesSlide_;
+}
+
+QImage PresentationWidget::intermissionSlide()
+{
+    if (intermissionSlide_.isNull())
+        intermissionSlide_ = QImage(":/assets/intermission.png");
+    return intermissionSlide_;
 }
 
 void PresentationWidget::slidesFound(int count)
@@ -162,12 +180,12 @@ void PresentationWidget::reloadSettings()
 
     // Reset state.
     currentSlideIndex_ = -1;
+    startSlideIndex_ = 0;
     state_ = Slide;
     slideCounter_ = 0;
 
     update();
 }
-
 
 void PresentationWidget::nextSlide()
 {
@@ -175,14 +193,24 @@ void PresentationWidget::nextSlide()
     case Slide:
         if (currentSlideIndex_ + 1 >= slideCount_) {
             state_ = OutOfSlides;
-            return;
+            update();
+        } else if (currentSlideIndex_ + 1 - startSlideIndex_ == slidesPerTurn_) {
+            state_ = Intermission;
+            update();
+        } else {
+            currentSlideIndex_++;
+            QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
         }
-
-        currentSlideIndex_++;
-        QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
         break;
     case Intermission:
+        currentSlideIndex_++;
+        QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
+        state_ = Slide;
+        startSlideIndex_ = currentSlideIndex_;
+        break;
+
     case OutOfSlides:
+        // Ignore.
         break;
     }
 
@@ -190,9 +218,22 @@ void PresentationWidget::nextSlide()
 
 void PresentationWidget::previousSlide()
 {
-    if (currentSlideIndex_ - 1 < 0)
+    if (currentSlideIndex_ - 1 < 0 || currentSlideIndex_ == startSlideIndex_)
         return;
-    currentSlideIndex_--;
+
+    switch (state_) {
+    case Slide:
+    default:
+        currentSlideIndex_--;
+        break;
+
+    case OutOfSlides:
+    case Intermission:
+        // If the user goes back, we're no longer in Intermission or at the end.
+        state_ = Slide;
+        break;
+    }
+
     QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
 }
 
