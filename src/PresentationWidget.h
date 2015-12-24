@@ -26,6 +26,7 @@ private slots:
     void slidesFound(int count);
     void slide(int index, QImage image);
     void noSlide(int index);
+    void intermissionTimeout();
 
 private:
     void scaleImage(QPainter *painter, const QImage &img) const;
@@ -44,11 +45,13 @@ private:
 
     SlideLoader *loader_;
     QThread *loaderThread_;
+    QTimer *intermissionTimer_;
 
     int slidesPerTurn_;
 
     enum State {
         Slide,
+        IntermissionTimeout,
         Intermission,
         OutOfSlides
     };

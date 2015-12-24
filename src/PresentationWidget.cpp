@@ -2,6 +2,8 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QThread>
+#include <QTimer>
+
 #include "SettingsDialog.h"
 #include "Settings.h"
 #include "SlideLoader.h"
@@ -20,6 +22,11 @@ PresentationWidget::PresentationWidget(Settings *settings, QWidget *parent) : QW
     connect(loader_, SIGNAL(slide(int,QImage)), SLOT(slide(int,QImage)));
     connect(loader_, SIGNAL(slidesFound(int)), SLOT(slidesFound(int)));
     connect(loader_, SIGNAL(noSlide(int)), SLOT(noSlide(int)));
+
+    intermissionTimer_ = new QTimer(this);
+    intermissionTimer_->setSingleShot(true);
+    intermissionTimer_->setInterval(1000); // Long enough to catch a double click, but not so long to be annoying.
+    connect(intermissionTimer_, SIGNAL(timeout()), SLOT(intermissionTimeout()));
 
     reloadSettings();
 }
@@ -118,6 +125,7 @@ void PresentationWidget::paintEvent(QPaintEvent *)
             img = currentSlide_;
         break;
 
+    case IntermissionTimeout:
     case Intermission:
         img = intermissionSlide();
         break;
@@ -172,6 +180,14 @@ void PresentationWidget::noSlide(int index)
     update();
 }
 
+void PresentationWidget::intermissionTimeout()
+{
+    // Allow the user to go the next slides onces
+    // they've waited long enough.
+    if (state_ == IntermissionTimeout)
+        state_ = Intermission;
+}
+
 void PresentationWidget::reloadSettings()
 {
     slideCount_ = 0;
@@ -183,6 +199,7 @@ void PresentationWidget::reloadSettings()
     startSlideIndex_ = 0;
     state_ = Slide;
     slideCounter_ = 0;
+    intermissionTimer_->stop();
 
     update();
 }
@@ -195,13 +212,19 @@ void PresentationWidget::nextSlide()
             state_ = OutOfSlides;
             update();
         } else if (currentSlideIndex_ + 1 - startSlideIndex_ == slidesPerTurn_) {
-            state_ = Intermission;
+            state_ = IntermissionTimeout;
+            intermissionTimer_->start();
             update();
         } else {
             currentSlideIndex_++;
             QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
         }
         break;
+    case IntermissionTimeout:
+        // Ignore next events until the intermission timer expires. This
+        // prevents accidents where someone hits next too aggressively.
+        break;
+
     case Intermission:
         currentSlideIndex_++;
         QMetaObject::invokeMethod(loader_, "requestSlide", Qt::QueuedConnection, Q_ARG(int, currentSlideIndex_));
@@ -225,6 +248,13 @@ void PresentationWidget::previousSlide()
     case Slide:
     default:
         currentSlideIndex_--;
+        break;
+
+    case IntermissionTimeout:
+        // It's ok to go back when waiting for the intermission timeout, so
+        // stop the timer and go back.
+        intermissionTimer_->stop();
+        state_ = Slide;
         break;
 
     case OutOfSlides:
