@@ -28,7 +28,6 @@ FORMS    += \
     src/SettingsDialog.ui
 
 DISTFILES += \
-    TODO.md \
     deploy_linux.sh \
     deploy_osx.sh \
     deploy_win32.bat \
