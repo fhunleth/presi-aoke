@@ -1,2 +1,6 @@
 /build
 /presi-aoke.pro.user
+Makefile
+Makefile.Debug
+Makefile.Release
+ui_*.h

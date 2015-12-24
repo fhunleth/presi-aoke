@@ -1,6 +1,13 @@
 @echo off
 
 echo Compiling...
+cd windeployqt
+qmake windeployqt.pro
+IF ERRORLEVEL ==1 GOTO :ERROR
+mingw32-make.exe release
+IF ERRORLEVEL ==1 GOTO :ERROR
+cd ..
+
 qmake presi-aoke.pro
 IF ERRORLEVEL ==1 GOTO :ERROR
 mingw32-make.exe release
@@ -9,7 +16,7 @@ IF ERRORLEVEL ==1 GOTO :ERROR
 echo Copying files to staging
 del /Q /S .\staging
 mkdir .\staging
-copy .\release\presi-aoki.exe .\staging
+copy .\release\presi-aoke.exe .\staging
 
 echo Copying qt libraries to staging
 .\windeployqt\release\windeployqt.exe .\staging\presi-aoke.exe -no-translations -no-webkit2 -opengl

@@ -31,8 +31,9 @@ DISTFILES += \
     TODO.md \
     deploy_linux.sh \
     deploy_osx.sh \
-    presi-aoki.nsi \
-    deploy_win32.bat
+    deploy_win32.bat \
+    presi-aoke.nsi \
+    .travis.yml
 
 unix {
     target.path = /usr/local/bin
