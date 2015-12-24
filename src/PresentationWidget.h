@@ -21,12 +21,14 @@ public slots:
 protected:
     void keyPressEvent(QKeyEvent *);
     void paintEvent(QPaintEvent *);
+    void mouseMoveEvent(QMouseEvent *);
 
 private slots:
     void slidesFound(int count);
     void slide(int index, QImage image);
     void noSlide(int index);
     void intermissionTimeout();
+    void hideCursorTimeout();
 
 private:
     void scaleImage(QPainter *painter, const QImage &img) const;
@@ -46,6 +48,7 @@ private:
     SlideLoader *loader_;
     QThread *loaderThread_;
     QTimer *intermissionTimer_;
+    QTimer *hideCursorTimer_;
 
     int slidesPerTurn_;
 

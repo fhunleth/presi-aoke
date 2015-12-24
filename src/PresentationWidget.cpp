@@ -28,6 +28,13 @@ PresentationWidget::PresentationWidget(Settings *settings, QWidget *parent) : QW
     intermissionTimer_->setInterval(1000); // Long enough to catch a double click, but not so long to be annoying.
     connect(intermissionTimer_, SIGNAL(timeout()), SLOT(intermissionTimeout()));
 
+    // Autohide the mouse cursor after inactivity
+    setMouseTracking(true);
+    hideCursorTimer_ = new QTimer(this);
+    hideCursorTimer_->setSingleShot(true);
+    hideCursorTimer_->setInterval(1000);
+    connect(hideCursorTimer_, SIGNAL(timeout()), SLOT(hideCursorTimeout()));
+
     reloadSettings();
 }
 
@@ -138,6 +145,12 @@ void PresentationWidget::paintEvent(QPaintEvent *)
     scaleImage(&p, img);
 }
 
+void PresentationWidget::mouseMoveEvent(QMouseEvent *)
+{
+    setCursor(Qt::ArrowCursor);
+    hideCursorTimer_->start();
+}
+
 QImage PresentationWidget::instructionSlide()
 {
     if (instructionsSlide_.isNull())
@@ -186,6 +199,11 @@ void PresentationWidget::intermissionTimeout()
     // they've waited long enough.
     if (state_ == IntermissionTimeout)
         state_ = Intermission;
+}
+
+void PresentationWidget::hideCursorTimeout()
+{
+    setCursor(Qt::BlankCursor);
 }
 
 void PresentationWidget::reloadSettings()
