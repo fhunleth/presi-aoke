@@ -14,12 +14,13 @@ install:
   - cinst nsis
 
 init:
-  - set PATH=C:\Qt\5.5\%qt%\bin;%PATH%
+  - echo %PATH%
+  - echo %makefiles%
   - set makefiles="MinGW Makefiles"
 
 build_script:
-  - set PATH=C:\Qt\5.5\%qt%\bin;C:\Qt\Tools\mingw492_32\bin
-  - build_win32.bat $(APPVEYOR_BUILD_NUMBER)
+  - set PATH=C:\Qt\5.5\%qt%\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
+  - build_win32.bat %APPVEYOR_BUILD_NUMBER%
 
 artifacts:
   - path: presi-aoke-*.exe
