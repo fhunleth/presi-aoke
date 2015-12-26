@@ -1,0 +1,23 @@
+version: 0.1.0.{build}
+
+# See https://github.com/vlc-qt/examples/blob/master/.appveyor.yml for examples
+environment:
+  matrix:
+  - example: simple-player
+    name: win32
+    platform: mingw
+    qt: mingw492_32
+
+install:
+  - cinst nsis
+
+init:
+  - set PATH=C:\Qt\5.5\%qt%\bin;%PATH%
+  - set makefiles="MinGW Makefiles"
+
+build_script:
+  - set PATH=C:\Qt\5.5\%qt%\bin;C:\Qt\Tools\mingw492_32\bin
+  - deploy_win32.bat
+
+artifacts:
+  - path: presi-aoke-*.exe

@@ -33,7 +33,8 @@ DISTFILES += \
     deploy_win32.bat \
     presi-aoke.nsi \
     .travis.yml \
-    README.md
+    README.md \
+    appveyor.yml
 
 unix {
     target.path = /usr/local/bin
