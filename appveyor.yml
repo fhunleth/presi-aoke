@@ -19,7 +19,7 @@ init:
 
 build_script:
   - set PATH=C:\Qt\5.5\%qt%\bin;C:\Qt\Tools\mingw492_32\bin
-  - build_win32.bat {build}
+  - build_win32.bat $(APPVEYOR_BUILD_NUMBER)
 
 artifacts:
   - path: presi-aoke-*.exe
