@@ -1,5 +1,5 @@
 # Appveyor version identifier
-version: {build}
+version: build{build}
 
 # See https://github.com/vlc-qt/examples/blob/master/.appveyor.yml for examples
 # This could be simplified, but I'm keeping it in case I want to add a VS build
