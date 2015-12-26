@@ -1,5 +1,20 @@
 @echo off
 
+rem The build number is passed in
+set BUILD=%1
+IF %BUILD%.==. SET BUILD=0
+
+rem Read the major.minor.patch version from the VERSION file
+FOR /F %%i IN (VERSION) DO SET VERSION=%%i
+IF %VERSION%.==. (
+echo Check VERSION file. Something isn't right.
+EXIT /B 1
+)
+
+rem For Windows, append the build number at the end
+set VERSION=%VERSION%.%BUILD%
+echo Building version: %VERSION%
+
 echo Compiling...
 qmake presi-aoke.pro
 IF ERRORLEVEL ==1 GOTO :ERROR
@@ -21,7 +36,7 @@ erase .\staging\imageformats\qgifd.dll .\staging\imageformats\qjpegd.dll .\stagi
 echo Creating installer
 
 if exist "C:\Program Files (x86)\NSIS\makensis.exe" (set nsis="C:\Program Files (x86)\NSIS\makensis.exe") else (set nsis="C:\Program Files\NSIS\makensis.exe")
-%nsis% presi-aoke.nsi
+%nsis% /DVERSION=%VERSION% presi-aoke.nsi
 IF ERRORLEVEL ==1 GOTO :ERROR
 
 echo Build complete

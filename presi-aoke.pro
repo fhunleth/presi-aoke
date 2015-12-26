@@ -34,7 +34,8 @@ DISTFILES += \
     appveyor.yml \
     build_win32.bat \
     build_linux.sh \
-    build_osx.sh
+    build_osx.sh \
+    VERSION
 
 unix {
     target.path = /usr/local/bin

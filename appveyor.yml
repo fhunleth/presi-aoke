@@ -1,4 +1,5 @@
-version: 0.1.0.{build}
+# Appveyor version identifier
+version: {build}
 
 # See https://github.com/vlc-qt/examples/blob/master/.appveyor.yml for examples
 # This could be simplified, but I'm keeping it in case I want to add a VS build
@@ -18,7 +19,7 @@ init:
 
 build_script:
   - set PATH=C:\Qt\5.5\%qt%\bin;C:\Qt\Tools\mingw492_32\bin
-  - build_win32.bat
+  - build_win32.bat {build}
 
 artifacts:
   - path: presi-aoke-*.exe

@@ -1,6 +1,6 @@
-!define BUILD_PRODUCTS_BASE "./staging"
-!define VERSION 0.1.0.0
+; Pass in the VERSION via the commandline: /DVERSION=x.y.z.w
 
+!define BUILD_PRODUCTS_BASE "./staging"
 !include MUI2.nsh
 !include Library.nsh
 
@@ -49,6 +49,8 @@ RequestExecutionLevel admin
 Section "Main (required)"
 
   SectionIn RO
+
+  DetailPrint ${VERSION}
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR\bin
