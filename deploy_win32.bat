@@ -1,13 +1,6 @@
 @echo off
 
 echo Compiling...
-cd windeployqt
-qmake windeployqt.pro
-IF ERRORLEVEL ==1 GOTO :ERROR
-mingw32-make.exe release
-IF ERRORLEVEL ==1 GOTO :ERROR
-cd ..
-
 qmake presi-aoke.pro
 IF ERRORLEVEL ==1 GOTO :ERROR
 mingw32-make.exe release
@@ -19,7 +12,7 @@ mkdir .\staging
 copy .\release\presi-aoke.exe .\staging
 
 echo Copying qt libraries to staging
-.\windeployqt\release\windeployqt.exe .\staging\presi-aoke.exe -no-translations -no-webkit -no-webkit2 -no-opengl -no-svg
+windeployqt.exe .\staging\presi-aoke.exe -no-translations -no-system-d3d-compiler -no-webkit -no-webkit2 -no-opengl -no-svg
 rem Trim a bunch of plugins that we don't use
 del /Q /S .\staging\iconengines
 erase .\staging\imageformats\qdds*.dll .\staging\imageformats\qicns*.dll .\staging\imageformats\qico*.dll .\staging\imageformats\qjp2*.dll .\staging\imageformats\qmng*.dll .\staging\imageformats\qsvg*.dll .\staging\imageformats\qtga*.dll .\staging\imageformats\qtiff*.dll .\staging\imageformats\qweb*.dll
