@@ -28,13 +28,13 @@ FORMS    += \
     src/SettingsDialog.ui
 
 DISTFILES += \
-    deploy_linux.sh \
-    deploy_osx.sh \
-    deploy_win32.bat \
     presi-aoke.nsi \
     .travis.yml \
     README.md \
-    appveyor.yml
+    appveyor.yml \
+    build_win32.bat \
+    build_linux.sh \
+    build_osx.sh
 
 unix {
     target.path = /usr/local/bin
