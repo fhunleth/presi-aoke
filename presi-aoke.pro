@@ -32,7 +32,8 @@ DISTFILES += \
     deploy_osx.sh \
     deploy_win32.bat \
     presi-aoke.nsi \
-    .travis.yml
+    .travis.yml \
+    README.md
 
 unix {
     target.path = /usr/local/bin
