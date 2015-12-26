@@ -19,7 +19,11 @@ mkdir .\staging
 copy .\release\presi-aoke.exe .\staging
 
 echo Copying qt libraries to staging
-.\windeployqt\release\windeployqt.exe .\staging\presi-aoke.exe -no-translations -no-webkit2 -opengl
+.\windeployqt\release\windeployqt.exe .\staging\presi-aoke.exe -no-translations -no-webkit -no-webkit2 -no-opengl -no-svg
+rem Trim a bunch of plugins that we don't use
+del /Q /S .\staging\iconengines
+erase .\staging\imageformats\qdds*.dll .\staging\imageformats\qicns*.dll .\staging\imageformats\qico*.dll .\staging\imageformats\qjp2*.dll .\staging\imageformats\qmng*.dll .\staging\imageformats\qsvg*.dll .\staging\imageformats\qtga*.dll .\staging\imageformats\qtiff*.dll .\staging\imageformats\qweb*.dll
+erase .\staging\imageformats\qgifd.dll .\staging\imageformats\qjpegd.dll .\staging\imageformats\qwbmpd.dll
 
 echo Creating installer
 
