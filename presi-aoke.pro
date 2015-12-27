@@ -38,7 +38,7 @@ DISTFILES += \
     VERSION
 
 unix {
-    target.path = /usr/local/bin
+    target.path = /usr/bin
     INSTALLS += target
 }
 

@@ -1,8 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-VERSION=$(git describe --always)
 APP=presi-aoke
 [ -z $QMAKE ] && QMAKE=qmake
 
@@ -10,5 +9,10 @@ rm -fr build
 mkdir build
 cd build
 $QMAKE ../$APP.pro
-make
+make -j4
+cd ..
 
+# Build the Debian package
+rm -fr pkg-debian
+mkdir pkg-debian
+(cd pkg-debian; fakeroot ../build_debian_pkg.sh)
