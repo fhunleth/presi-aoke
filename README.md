@@ -18,4 +18,7 @@ project.
 I do not distribute slides. You will need to download them to a directory and then
 point presi-aoke at them (settings are accessed via the `s` key). Slides should be JPEG
 or PNG images. Presi-aoke will scale them appropriately for your display or projector.
+One location to check is
+[https://github.com/arlobelshee/PresentationKaraoke/tree/master/Presentation](arlobelshee's
+PresentationKaraoke slide deck).
 
