@@ -8,7 +8,7 @@ is all about, Presentation Karoake is a multi-player activity where
 each participant gives a short presentation to the group. Topics can be
 chosen by the group, but the slides are random.
 
-I learned of this from [Llewellyn Falco](http://llewellynfalco.blogspot.com/) at
+I learned of this game from [Llewellyn Falco](http://llewellynfalco.blogspot.com/) at
 [Strange Loop 2015](http://thestrangeloop.com/). Quite unexpectantly, my
 family enjoys this to no end. This player application was born out of
 some frustration with other players. It has a secondary purpose for me and that
