@@ -1,6 +1,7 @@
 # presi-aoke
 
 [![Build status](https://ci.appveyor.com/api/projects/status/vdfcuwmxxvrgni92/branch/master?svg=true)](https://ci.appveyor.com/project/fhunleth/presi-aoke/branch/master)
+[![Build status](https://travis-ci.org/fhunleth/presi-aoke.png)](https://travis-ci.org/fhunleth/presi-aoke)
 
 This is a simple Presentation Karaoke player. If you're wondering what this
 is all about, Presentation Karoake is a multi-player activity where
